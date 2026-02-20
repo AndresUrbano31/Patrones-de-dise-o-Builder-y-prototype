@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content}, ~{::scripts})}">
+<head>
+    <title>Galería — RPG Character Forge</title>
+</head>
+<body>
+<th:block th:fragment="content">
+    <h1 class="mb-4">Galería de personajes</h1>
+
+    <div th:if="${createdName}" class="alert alert-success">
+        Personaje <strong th:text="${createdName}"></strong> creado correctamente.
+    </div>
+    <div th:if="${cloned}" class="alert alert-success">
+        Clon creado correctamente.
+    </div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div th:each="character : ${characters}" class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="mb-2">
+                        <span th:switch="${character.characterClass}">
+                            <span th:case="'Guerrero'">⚔️</span>
+                            <span th:case="'Mago'">🧙</span>
+                            <span th:case="'Arquero'">🏹</span>
+                            <span th:case="'Paladín'">🛡️</span>
+                            <span th:case="'Asesino'">🗡️</span>
+                            <span th:case="*">⚔️</span>
+                        </span>
+                        <h5 class="card-title d-inline ms-1" th:text="${character.name}">Nombre</h5>
+                    </div>
+                    <p class="mb-1">
+                        <span class="badge bg-secondary" th:text="${character.race}">Raza</span>
+                        <span class="badge bg-primary" th:text="${character.characterClass}">Clase</span>
+                        <span class="badge bg-info">Nivel <span th:text="${character.level}">1</span></span>
+                        <th:block th:if="${character.clonedFromId != null}">
+                            <span class="badge bg-warning text-dark">Clon</span>
+                            <small class="text-muted d-block mt-1">
+                                Clonado de: <span th:text="${originalNames != null ? originalNames[character.clonedFromId] : '#' + character.clonedFromId}">?</span>
+                            </small>
+                        </th:block>
+                    </p>
+                    <div class="small mb-2">
+                        <div class="d-flex justify-content-between"><span>STR</span><span th:text="${character.strength}">0</span></div>
+                        <div class="progress" style="height: 4px;"><div class="progress-bar bg-danger" th:style="'width: ' + ${character.strength} + '%'"></div></div>
+                        <div class="d-flex justify-content-between"><span>AGI</span><span th:text="${character.agility}">0</span></div>
+                        <div class="progress" style="height: 4px;"><div class="progress-bar bg-success" th:style="'width: ' + ${character.agility} + '%'"></div></div>
+                        <div class="d-flex justify-content-between"><span>INT</span><span th:text="${character.intelligence}">0</span></div>
+                        <div class="progress" style="height: 4px;"><div class="progress-bar bg-info" th:style="'width: ' + ${character.intelligence} + '%'"></div></div>
+                        <div class="d-flex justify-content-between"><span>VIT</span><span th:text="${character.vitality}">0</span></div>
+                        <div class="progress" style="height: 4px;"><div class="progress-bar bg-warning" th:style="'width: ' + ${character.vitality} + '%'"></div></div>
+                        <div class="d-flex justify-content-between"><span>LCK</span><span th:text="${character.luck}">0</span></div>
+                        <div class="progress" style="height: 4px;"><div class="progress-bar bg-secondary" th:style="'width: ' + ${character.luck} + '%'"></div></div>
+                    </div>
+                    <div class="d-flex gap-1 flex-wrap">
+                        <a th:href="@{/clone/{id}(id=${character.id})}" class="btn btn-sm btn-outline-primary">Clonar</a>
+                        <th:block th:if="${clonesByOriginalId != null and clonesByOriginalId[character.id] != null and !clonesByOriginalId[character.id].isEmpty()}">
+                            <a th:href="@{/compare(original=${character.id}, clone=${clonesByOriginalId[character.id][0].id})}" class="btn btn-sm btn-outline-secondary">Comparar</a>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de clonación -->
+    <div class="modal fade" id="cloneModal" tabindex="-1" th:attr="data-bs-backdrop=${showCloneModal} ? 'static' : null">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Clonar personaje</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form th:if="${cloneTargetId != null}" th:action="@{/clone/{id}(id=${cloneTargetId})}" th:object="${patch}" method="post">
+                    <div class="modal-body">
+                        <p th:if="${cloneTarget}" class="text-muted small">Clonando a: <strong th:text="${cloneTarget.name}">?</strong></p>
+                        <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+                            <ul class="mb-0">
+                                <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                            </ul>
+                        </div>
+                        <div class="mb-3">
+                            <label for="patchName" class="form-label">Nuevo nombre <span class="text-danger">*</span></label>
+                            <input type="text" id="patchName" class="form-control" th:field="*{name}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="patchClass" class="form-label">Nueva clase (opcional)</label>
+                            <select id="patchClass" class="form-select" th:field="*{characterClass}">
+                                <option value="">— Sin cambiar —</option>
+                                <option value="Guerrero">Guerrero</option>
+                                <option value="Mago">Mago</option>
+                                <option value="Arquero">Arquero</option>
+                                <option value="Paladín">Paladín</option>
+                                <option value="Asesino">Asesino</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Habilidades (opcional, máx. 4)</label>
+                            <div th:each="skill, skillStat : ${allSkills}" class="form-check">
+                                <input class="form-check-input patch-skill" type="checkbox" th:field="*{skills}" th:value="${skill}" th:id="|ps_${skillStat.index}|">
+                                <label class="form-check-label" th:for="|ps_${skillStat.index}|" th:text="${skill}">Skill</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Equipamiento (opcional, máx. 3)</label>
+                            <div th:each="equip, equipStat : ${allEquipment}" class="form-check">
+                                <input class="form-check-input patch-equip" type="checkbox" th:field="*{equipment}" th:value="${equip}" th:id="|pe_${equipStat.index}|">
+                                <label class="form-check-label" th:for="|pe_${equipStat.index}|" th:text="${equip}">Equip</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a th:href="@{/gallery}" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Confirmar clonación</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <a th:href="@{/wizard/step1}" class="btn btn-primary btn-lg position-fixed bottom-0 end-0 m-4 rounded-circle shadow" style="width: 56px; height: 56px; padding: 0; font-size: 1.5rem;" title="Crear personaje">+</a>
+</th:block>
+
+<th:block th:fragment="scripts">
+    <script th:inline="javascript">
+        (function () {
+            var showModal = /*[[${showCloneModal}]]*/ false;
+            if (showModal) {
+                var modal = new bootstrap.Modal(document.getElementById('cloneModal'));
+                modal.show();
+            }
+            var maxSkills = 4, maxEquip = 3;
+            document.querySelectorAll('.patch-skill').forEach(function (cb) {
+                cb.addEventListener('change', function () {
+                    var n = document.querySelectorAll('.patch-skill:checked').length;
+                    document.querySelectorAll('.patch-skill:not(:checked)').forEach(function (c) { c.disabled = n >= maxSkills; });
+                    if (n < maxSkills) document.querySelectorAll('.patch-skill').forEach(function (c) { c.removeAttribute('disabled'); });
+                });
+            });
+            document.querySelectorAll('.patch-equip').forEach(function (cb) {
+                cb.addEventListener('change', function () {
+                    var n = document.querySelectorAll('.patch-equip:checked').length;
+                    document.querySelectorAll('.patch-equip:not(:checked)').forEach(function (c) { c.disabled = n >= maxEquip; });
+                    if (n < maxEquip) document.querySelectorAll('.patch-equip').forEach(function (c) { c.removeAttribute('disabled'); });
+                });
+            });
+        })();
+    </script>
+</th:block>
+</body>
+</html>

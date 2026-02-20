@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content}, ~{::scripts})}">
+<head>
+    <title>Comparar personajes — RPG Character Forge</title>
+</head>
+<body>
+<th:block th:fragment="content">
+    <h1 class="mb-4">Comparar personajes</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0" th:text="${original.name}">Original</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Raza:</strong> <span th:text="${original.race}">—</span></p>
+                    <p><strong>Clase:</strong> <span th:text="${original.characterClass}">—</span></p>
+                    <p><strong>Nivel:</strong> <span th:text="${original.level}">1</span></p>
+                    <p><strong>Fuerza:</strong> <span th:classappend="${original.strength >= clone.strength ? 'text-success' : 'text-danger'}" th:text="${original.strength}">0</span></p>
+                    <p><strong>Agilidad:</strong> <span th:classappend="${original.agility >= clone.agility ? 'text-success' : 'text-danger'}" th:text="${original.agility}">0</span></p>
+                    <p><strong>Inteligencia:</strong> <span th:classappend="${original.intelligence >= clone.intelligence ? 'text-success' : 'text-danger'}" th:text="${original.intelligence}">0</span></p>
+                    <p><strong>Vitalidad:</strong> <span th:classappend="${original.vitality >= clone.vitality ? 'text-success' : 'text-danger'}" th:text="${original.vitality}">0</span></p>
+                    <p><strong>Suerte:</strong> <span th:classappend="${original.luck >= clone.luck ? 'text-success' : 'text-danger'}" th:text="${original.luck}">0</span></p>
+                    <p><strong>Habilidades:</strong> <span th:text="${original.skills} ?: '—'">—</span></p>
+                    <p><strong>Equipamiento:</strong> <span th:text="${original.equipment} ?: '—'">—</span></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0" th:text="${clone.name}">Clon</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Raza:</strong> <span th:text="${clone.race}">—</span></p>
+                    <p><strong>Clase:</strong> <span th:text="${clone.characterClass}">—</span></p>
+                    <p><strong>Nivel:</strong> <span th:text="${clone.level}">1</span></p>
+                    <p><strong>Fuerza:</strong> <span th:classappend="${clone.strength >= original.strength ? 'text-success' : 'text-danger'}" th:text="${clone.strength}">0</span></p>
+                    <p><strong>Agilidad:</strong> <span th:classappend="${clone.agility >= original.agility ? 'text-success' : 'text-danger'}" th:text="${clone.agility}">0</span></p>
+                    <p><strong>Inteligencia:</strong> <span th:classappend="${clone.intelligence >= original.intelligence ? 'text-success' : 'text-danger'}" th:text="${clone.intelligence}">0</span></p>
+                    <p><strong>Vitalidad:</strong> <span th:classappend="${clone.vitality >= original.vitality ? 'text-success' : 'text-danger'}" th:text="${clone.vitality}">0</span></p>
+                    <p><strong>Suerte:</strong> <span th:classappend="${clone.luck >= original.luck ? 'text-success' : 'text-danger'}" th:text="${clone.luck}">0</span></p>
+                    <p><strong>Habilidades:</strong> <span th:text="${clone.skills} ?: '—'">—</span></p>
+                    <p><strong>Equipamiento:</strong> <span th:text="${clone.equipment} ?: '—'">—</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4" th:if="${uniqueSkillsClone != null and !uniqueSkillsClone.isEmpty()}">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Habilidades únicas del clon</h5>
+        </div>
+        <div class="card-body">
+            <ul class="mb-0">
+                <li th:each="skill : ${uniqueSkillsClone}" th:text="${skill}">Skill</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a th:href="@{/gallery}" class="btn btn-secondary">← Volver a la galería</a>
+    </div>
+</th:block>
+
+<th:block th:fragment="scripts"></th:block>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content}, ~{::scripts})}">
+<head>
+    <title>Paso 4 — Equipamiento</title>
+</head>
+<body>
+<th:block th:fragment="content">
+    <h1 class="mb-3">Paso 4 de 4 — Equipamiento</h1>
+    <div class="progress mb-4" style="height: 8px;">
+        <div class="progress-bar" role="progressbar" style="width: 100%"></div>
+    </div>
+
+    <div th:if="${error}" class="alert alert-warning" th:text="${error}"></div>
+    <p class="text-muted">Selecciona hasta 3 items de equipamiento.</p>
+
+    <form th:action="@{/wizard/step4}" method="post" class="card card-body shadow-sm">
+        <div class="mb-3">
+            <div th:each="equip, equipStat : ${allEquipment}" class="form-check">
+                <input class="form-check-input equip-cb" type="checkbox" name="equipment" th:value="${equip}" th:id="|e_${equipStat.index}|" th:checked="${form.equipment != null and form.equipment.contains(equip)}">
+                <label class="form-check-label" th:for="|e_${equipStat.index}|" th:text="${equip}">Equip</label>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a th:href="@{/wizard/step3}" class="btn btn-outline-secondary">← Anterior</a>
+            <button type="submit" class="btn btn-success">✨ Forjar Personaje</button>
+        </div>
+    </form>
+</th:block>
+
+<th:block th:fragment="scripts">
+    <script th:inline="javascript">
+        (function () {
+            var max = 3;
+            document.querySelectorAll('.equip-cb').forEach(function (cb) {
+                cb.addEventListener('change', function () {
+                    var checked = document.querySelectorAll('.equip-cb:checked');
+                    if (checked.length >= max) {
+                        document.querySelectorAll('.equip-cb:not(:checked)').forEach(function (c) {
+                            c.setAttribute('disabled', 'disabled');
+                        });
+                    } else {
+                        document.querySelectorAll('.equip-cb').forEach(function (c) {
+                            c.removeAttribute('disabled');
+                        });
+                    }
+                });
+            });
+            var checked = document.querySelectorAll('.equip-cb:checked');
+            if (checked.length >= max) {
+                document.querySelectorAll('.equip-cb:not(:checked)').forEach(function (c) { c.setAttribute('disabled', 'disabled'); });
+            }
+        })();
+    </script>
+</th:block>
+</body>
+</html>

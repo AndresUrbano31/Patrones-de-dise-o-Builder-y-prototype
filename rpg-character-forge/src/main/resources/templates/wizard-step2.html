@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content}, ~{::scripts})}">
+<head>
+    <title>Paso 2 — Estadísticas</title>
+</head>
+<body>
+<th:block th:fragment="content">
+    <h1 class="mb-3">Paso 2 de 4 — Estadísticas</h1>
+    <div class="progress mb-4" style="height: 8px;">
+        <div class="progress-bar" role="progressbar" style="width: 50%"></div>
+    </div>
+
+    <form th:action="@{/wizard/step2}" th:object="${form}" method="post" class="card card-body shadow-sm">
+        <div class="mb-3">
+            <label class="form-label">Fuerza: <span th:text="*{strength}">1</span></label>
+            <input type="range" class="form-range" th:field="*{strength}" min="1" max="100">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Agilidad: <span th:text="*{agility}">1</span></label>
+            <input type="range" class="form-range" th:field="*{agility}" min="1" max="100">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Inteligencia: <span th:text="*{intelligence}">1</span></label>
+            <input type="range" class="form-range" th:field="*{intelligence}" min="1" max="100">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Vitalidad: <span th:text="*{vitality}">1</span></label>
+            <input type="range" class="form-range" th:field="*{vitality}" min="1" max="100">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Suerte: <span th:text="*{luck}">1</span></label>
+            <input type="range" class="form-range" th:field="*{luck}" min="1" max="100">
+        </div>
+        <div class="d-flex gap-2">
+            <a th:href="@{/wizard/step1}" class="btn btn-outline-secondary">← Anterior</a>
+            <button type="submit" class="btn btn-primary">Siguiente →</button>
+        </div>
+    </form>
+</th:block>
+
+<th:block th:fragment="scripts">
+    <script th:inline="javascript">
+        document.querySelectorAll('input[type="range"]').forEach(function (input) {
+            input.addEventListener('input', function () {
+                this.nextElementSibling.previousElementSibling.textContent = this.value;
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content}, ~{::scripts})}">
+<head>
+    <title>Paso 3 — Habilidades</title>
+</head>
+<body>
+<th:block th:fragment="content">
+    <h1 class="mb-3">Paso 3 de 4 — Habilidades</h1>
+    <div class="progress mb-4" style="height: 8px;">
+        <div class="progress-bar" role="progressbar" style="width: 75%"></div>
+    </div>
+
+    <div th:if="${error}" class="alert alert-warning" th:text="${error}"></div>
+    <p class="text-muted">Selecciona hasta 4 habilidades.</p>
+
+    <form th:action="@{/wizard/step3}" method="post" class="card card-body shadow-sm">
+        <div class="mb-3">
+            <div class="form-check">
+                <input class="form-check-input skill-cb" type="checkbox" name="skills" value="Golpe brutal" id="s1"
+                   th:checked="${form.skills != null and form.skills.contains('Golpe brutal')}">
+                <label class="form-check-label" for="s1">Golpe brutal</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input skill-cb" type="checkbox" name="skills" value="Escudo divino" id="s2"
+                   th:checked="${form.skills != null and form.skills.contains('Escudo divino')}">
+                <label class="form-check-label" for="s2">Escudo divino</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input skill-cb" type="checkbox" name="skills" value="Flecha de fuego" id="s3"
+                   th:checked="${form.skills != null and form.skills.contains('Flecha de fuego')}">
+                <label class="form-check-label" for="s3">Flecha de fuego</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input skill-cb" type="checkbox" name="skills" value="Teletransporte" id="s4"
+                   th:checked="${form.skills != null and form.skills.contains('Teletransporte')}">
+                <label class="form-check-label" for="s4">Teletransporte</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input skill-cb" type="checkbox" name="skills" value="Curación" id="s5"
+                   th:checked="${form.skills != null and form.skills.contains('Curación')}">
+                <label class="form-check-label" for="s5">Curación</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input skill-cb" type="checkbox" name="skills" value="Veneno letal" id="s6"
+                   th:checked="${form.skills != null and form.skills.contains('Veneno letal')}">
+                <label class="form-check-label" for="s6">Veneno letal</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input skill-cb" type="checkbox" name="skills" value="Rayo de hielo" id="s7"
+                   th:checked="${form.skills != null and form.skills.contains('Rayo de hielo')}">
+                <label class="form-check-label" for="s7">Rayo de hielo</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input skill-cb" type="checkbox" name="skills" value="Furia berserker" id="s8"
+                   th:checked="${form.skills != null and form.skills.contains('Furia berserker')}">
+                <label class="form-check-label" for="s8">Furia berserker</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input skill-cb" type="checkbox" name="skills" value="Invisibilidad" id="s9"
+                   th:checked="${form.skills != null and form.skills.contains('Invisibilidad')}">
+                <label class="form-check-label" for="s9">Invisibilidad</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input skill-cb" type="checkbox" name="skills" value="Invocar familiar" id="s10"
+                   th:checked="${form.skills != null and form.skills.contains('Invocar familiar')}">
+                <label class="form-check-label" for="s10">Invocar familiar</label>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a th:href="@{/wizard/step2}" class="btn btn-outline-secondary">← Anterior</a>
+            <button type="submit" class="btn btn-primary">Siguiente →</button>
+        </div>
+    </form>
+</th:block>
+
+<th:block th:fragment="scripts">
+    <script th:inline="javascript">
+        (function () {
+            var max = 4;
+            document.querySelectorAll('.skill-cb').forEach(function (cb) {
+                cb.addEventListener('change', function () {
+                    var checked = document.querySelectorAll('.skill-cb:checked');
+                    if (checked.length >= max) {
+                        document.querySelectorAll('.skill-cb:not(:checked)').forEach(function (c) {
+                            c.setAttribute('disabled', 'disabled');
+                        });
+                    } else {
+                        document.querySelectorAll('.skill-cb').forEach(function (c) {
+                            c.removeAttribute('disabled');
+                        });
+                    }
+                });
+            });
+            var checked = document.querySelectorAll('.skill-cb:checked');
+            if (checked.length >= max) {
+                document.querySelectorAll('.skill-cb:not(:checked)').forEach(function (c) {
+                    c.setAttribute('disabled', 'disabled');
+                });
+            }
+        })();
+    </script>
+</th:block>
+</body>
+</html>
